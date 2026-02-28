@@ -1,160 +1,181 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('adminlte::page')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Agregar Nuevo Instructor</title>
-    @vite([
-    'resources/css/app.css',
-    'resources/js/app.js',
-    'node_modules/admin-lte/dist/css/adminlte.min.css',
-    'node_modules/admin-lte/plugins/fontawesome-free/css/all.min.css'
-    ])
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
+@section('title', 'Agregar Instructor')
 
-<body class="hold-transition sidebar-mini">
-    <div class="wrapper">
+@section('content_header')
+<h1>Agregar Instructor</h1>
+@stop
 
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#">☰</a></li>
-                <li class="nav-item d-none d-sm-inline-block"><a href="/" class="nav-link">Inicio</a></li>
-            </ul>
-        </nav>
+@section('content')
 
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="/" class="brand-link text-center">
-                <span class="brand-text font-weight-light">Sistema Seguimiento</span>
-            </a>
-            <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column">
-                        <li class="nav-item">
-                            <a href="{{ route('instructores.index') }}" class="nav-link active">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                                <p>Instructores</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
-
-        <!-- Content -->
-        <div class="content-wrapper p-4">
-            <section class="content-header">
-                <div class="container-fluid">
-                    <h1>Agregar Nuevo Instructor</h1>
-                </div>
-            </section>
-
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-plus"></i> Nuevo Instructor</h3>
-                        </div>
-                        <form action="{{ route('instructores.store') }}" method="POST">
-                            @csrf
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="numdoc">Número Documento</label>
-                                    <input type="number" class="form-control" id="numdoc" name="Numdoc" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="nombres">Nombres</label>
-                                    <input type="text" class="form-control" id="nombres" name="Nombres" maxlength="100" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="apellidos">Apellidos</label>
-                                    <input type="text" class="form-control" id="apellidos" name="Apellidos" maxlength="100" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="direccion">Dirección</label>
-                                    <input type="text" class="form-control" id="direccion" name="Direccion" maxlength="200">
-                                </div>
-                                <div class="form-group">
-                                    <label for="telefono">Teléfono</label>
-                                    <input type="text" class="form-control" id="telefono" name="Telefono" maxlength="50">
-                                </div>
-                                <div class="form-group">
-                                    <label for="correoInstitucional">Correo Institucional</label>
-                                    <input type="email" class="form-control" id="correoInstitucional" name="CorreoInstitucional" maxlength="50">
-                                </div>
-                                <div class="form-group">
-                                    <label for="correoPersonal">Correo Personal</label>
-                                    <input type="email" class="form-control" id="correoPersonal" name="CorreoPersonal" maxlength="50">
-                                </div>
-                                <div class="form-group">
-                                    <label for="sexo">Sexo</label>
-                                    <select class="form-control" id="sexo" name="Sexo" required>
-                                        <option value="1">Masculino</option>
-                                        <option value="2">Femenino</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="fechaNacimiento">Fecha de Nacimiento</label>
-                                    <input type="date" class="form-control" id="fechaNacimiento" name="FechaNacimiento">
-                                </div>
-                                <div class="form-group">
-                                    <label for="eps">EPS</label>
-                                    <select class="form-control" id="eps" name="tbleps_NIS" required>
-                                        @foreach($eps as $item)
-                                        <option value="{{ $item->NIS }}">{{ $item->Denominacion }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="rolAdmin">Rol Administrativo</label>
-                                    <select class="form-control" id="rolAdmin" name="tblrolesadministrativos_NIS" required>
-                                        <option value="1">Coordinador Académico</option>
-                                        <option value="2">Director de Centro</option>
-                                        <option value="3">Subdirector Administrativo</option>
-                                        <option value="4">Jefe de Programa</option>
-                                        <option value="5">Asistente de Formación</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between">
-                                <a href="{{ route('instructores.index') }}" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left"></i> Volver
-                                </a>
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-save"></i> Guardar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- Footer -->
-        <footer class="main-footer text-center">
-            <strong>&copy; {{ date('Y') }} Sistema de Seguimiento</strong>
-        </footer>
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-plus"></i> Nuevo Instructor</h3>
     </div>
 
-    @vite(['resources/js/app.js','node_modules/admin-lte/dist/js/adminlte.min.js'])
+    <form id="formInstructorCreate" action="{{ route('instructores.store') }}" method="POST">
+        @csrf
 
-    <!-- Animación de éxito -->
-    @if(session('success'))
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            Swal.fire({
-                icon: 'success',
-                title: '¡Éxito!',
-                text: "{{ session('success') }}",
-                showConfirmButton: false,
-                timer: 2000
+        <div class="card-body">
+
+            <div class="form-group">
+                <label for="numdoc">Número Documento</label>
+                <input id="numdoc" type="number" class="form-control" name="Numdoc" value="{{ old('Numdoc') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nombres">Nombres</label>
+                <input id="nombres" type="text" class="form-control" name="Nombres" value="{{ old('Nombres') }}" maxlength="100" required>
+            </div>
+
+            <div class="form-group">
+                <label for="apellidos">Apellidos</label>
+                <input id="apellidos" type="text" class="form-control" name="Apellidos" value="{{ old('Apellidos') }}" maxlength="100" required>
+            </div>
+
+            <div class="form-group">
+                <label for="direccion">Dirección</label>
+                <input id="direccion" type="text" class="form-control" name="Direccion" value="{{ old('Direccion') }}" maxlength="200">
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input id="telefono" type="text" class="form-control" name="Telefono" value="{{ old('Telefono') }}" maxlength="50">
+            </div>
+
+            <div class="form-group">
+                <label for="correoInstitucional">Correo Institucional</label>
+                <input id="correoInstitucional" type="email" class="form-control" name="CorreoInstitucional" value="{{ old('CorreoInstitucional') }}" maxlength="50">
+            </div>
+
+            <div class="form-group">
+                <label for="correoPersonal">Correo Personal</label>
+                <input id="correoPersonal" type="email" class="form-control" name="CorreoPersonal" value="{{ old('CorreoPersonal') }}" maxlength="50">
+            </div>
+
+            <div class="form-group">
+                <label for="sexo">Sexo</label>
+                <select id="sexo" class="form-control" name="Sexo" required>
+                    <option value="">Seleccione</option>
+                    <option value="1" {{ old('Sexo') == '1' ? 'selected' : '' }}>Masculino</option>
+                    <option value="2" {{ old('Sexo') == '2' ? 'selected' : '' }}>Femenino</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                <input id="fechaNacimiento" type="date" class="form-control" name="FechaNacimiento" value="{{ old('FechaNacimiento') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="eps">EPS</label>
+                <select id="eps" class="form-control" name="tbleps_NIS" required>
+                    <option value="">Seleccione una EPS</option>
+                    @foreach($eps as $item)
+                    <option value="{{ $item->NIS }}" {{ old('tbleps_NIS') == $item->NIS ? 'selected' : '' }}>
+                        {{ $item->Denominacion }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="rolAdmin">Rol Administrativo</label>
+                <select id="rolAdmin" class="form-control" name="tblrolesadministrativos_NIS" required>
+                    <option value="">Seleccione un rol</option>
+                    <option value="1" {{ old('tblrolesadministrativos_NIS') == '1' ? 'selected' : '' }}>Coordinador Académico</option>
+                    <option value="2" {{ old('tblrolesadministrativos_NIS') == '2' ? 'selected' : '' }}>Director de Centro</option>
+                    <option value="3" {{ old('tblrolesadministrativos_NIS') == '3' ? 'selected' : '' }}>Subdirector Administrativo</option>
+                    <option value="4" {{ old('tblrolesadministrativos_NIS') == '4' ? 'selected' : '' }}>Jefe de Programa</option>
+                    <option value="5" {{ old('tblrolesadministrativos_NIS') == '5' ? 'selected' : '' }}>Asistente de Formación</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between">
+            <a href="{{ route('instructores.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Guardar
+            </button>
+        </div>
+    </form>
+</div>
+
+@stop
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.getElementById('formInstructorCreate').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const form = this;
+        const url = form.action;
+        const token = '{{ csrf_token() }}';
+
+        fetch(url, {
+                method: form.method.toUpperCase(),
+                body: new FormData(form),
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(async response => {
+                const contentType = response.headers.get('content-type') || '';
+                if (contentType.includes('application/json')) {
+                    return response.json();
+                }
+                // If not JSON, treat non-error HTTP as success
+                return {
+                    success: response.ok
+                };
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Instructor registrado!',
+                        text: data.message || 'El instructor se guardó correctamente.',
+                        showConfirmButton: false,
+                        timer: 1800
+                    }).then(() => {
+                        window.location.href = "{{ route('instructores.index') }}";
+                    });
+                    return;
+                }
+
+                // Validation errors (Laravel returns errors object)
+                if (data.errors) {
+                    const messages = Object.values(data.errors).flat().join('<br>');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Errores de validación',
+                        html: messages
+                    });
+                    return;
+                }
+
+                // Generic error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'No se pudo registrar el instructor.'
+                });
+            })
+            .catch(error => {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un problema al procesar la solicitud.'
+                });
             });
-        });
-    </script>
-    @endif
-
-</body>
-
-</html>
+    });
+</script>
+@stop

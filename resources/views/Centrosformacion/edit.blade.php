@@ -1,157 +1,154 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('adminlte::page')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Centro de Formación</title>
-    @vite([
-    'resources/css/app.css',
-    'resources/js/app.js',
-    'node_modules/admin-lte/dist/css/adminlte.min.css',
-    'node_modules/admin-lte/plugins/fontawesome-free/css/all.min.css'
-    ])
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
+@section('title', 'Editar Centro de Formación')
 
-<body class="hold-transition sidebar-mini">
-    <div class="wrapper">
+@section('content_header')
+<h1>Editar Centro de Formación</h1>
+@stop
 
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#">☰</a></li>
-                <li class="nav-item d-none d-sm-inline-block"><a href="/" class="nav-link">Inicio</a></li>
-            </ul>
-        </nav>
-
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="/" class="brand-link text-center">
-                <span class="brand-text font-weight-light">Sistema Seguimiento</span>
-            </a>
-            <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column">
-                        <li class="nav-item">
-                            <a href="{{ route('centrosformacion.index') }}" class="nav-link active">
-                                <i class="fas fa-school"></i>
-                                <p>Centros Formación</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
-
-        <!-- Content -->
-        <div class="content-wrapper p-4">
-            <section class="content-header">
-                <div class="container-fluid">
-                    <h1>Editar Centro de Formación</h1>
-                </div>
-            </section>
-
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-edit"></i> Modificar Centro</h3>
-                        </div>
-                        <form id="formCentro" action="{{ route('centrosformacion.update', $dato->NIS) }}" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="codigo">Código</label>
-                                    <input type="text" class="form-control" id="codigo" name="Codigo"
-                                        value="{{ $dato->Codigo }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="denominacion">Denominación</label>
-                                    <input type="text" class="form-control" id="denominacion" name="Denominacion"
-                                        value="{{ $dato->Denominacion }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="observaciones">Observaciones</label>
-                                    <input type="text" class="form-control" id="observaciones" name="Observaciones"
-                                        value="{{ $dato->Observaciones }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="regional">Regional</label>
-                                    <select class="form-control" id="regional" name="tblregionales_NIS" required>
-                                        <option value="">Seleccione una regional</option>
-                                        @foreach($regionales as $regional)
-                                        <option value="{{ $regional->NIS }}"
-                                            {{ $dato->tblregionales_NIS == $regional->NIS ? 'selected' : '' }}>
-                                            {{ $regional->Denominacion }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between">
-                                <a href="{{ route('centrosformacion.index') }}" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left"></i> Volver
-                                </a>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Actualizar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- Footer -->
-        <footer class="main-footer text-center">
-            <strong>&copy; {{ date('Y') }} Sistema de Seguimiento</strong>
-        </footer>
+@section('content')
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-edit"></i> Modificar Centro</h3>
     </div>
 
-    @vite(['resources/js/app.js','node_modules/admin-lte/dist/js/adminlte.min.js'])
+    <form id="formCentro" action="{{ route('centrosformacion.update', $dato->NIS) }}" method="POST" novalidate>
+        @csrf
+        @method('PUT')
 
-    <script>
-        document.getElementById('formCentro').addEventListener('submit', function(e) {
+        <div class="card-body">
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="codigo">Código</label>
+                        <input type="text" class="form-control" id="codigo" name="Codigo"
+                            value="{{ old('Codigo', $dato->Codigo) }}" required>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label for="denominacion">Denominación</label>
+                        <input type="text" class="form-control" id="denominacion" name="Denominacion"
+                            value="{{ old('Denominacion', $dato->Denominacion) }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <input type="text" class="form-control" id="observaciones" name="Observaciones"
+                    value="{{ old('Observaciones', $dato->Observaciones) }}">
+            </div>
+
+            <div class="form-group">
+                <label for="regional">Regional</label>
+                <select class="form-control" id="regional" name="tblregionales_NIS" required>
+                    <option value="">Seleccione una regional</option>
+                    @foreach($regionales as $regional)
+                    <option value="{{ $regional->NIS }}"
+                        {{ (old('tblregionales_NIS', $dato->tblregionales_NIS) == $regional->NIS) ? 'selected' : '' }}>
+                        {{ $regional->Denominacion }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between">
+            <a href="{{ route('centrosformacion.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+
+            <div>
+                <button type="reset" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-undo"></i> Limpiar
+                </button>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Actualizar
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+@stop
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('formCentro');
+
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
-            let form = this;
-            fetch(form.action, {
-                    method: form.method,
-                    body: new FormData(form),
+
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                    method: 'POST', // Laravel expects POST with _method=PUT
+                    body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
                 })
-                .then(response => response.json())
+                .then(async response => {
+                    const contentType = response.headers.get('content-type') || '';
+                    if (contentType.includes('application/json')) {
+                        return response.json();
+                    }
+                    // If not JSON, treat 200-299 as success
+                    return {
+                        success: response.ok
+                    };
+                })
                 .then(data => {
-                    if (data.success) {
+                    if (data && data.success) {
                         Swal.fire({
                             icon: 'success',
                             title: '¡Centro actualizado!',
-                            text: 'Los datos se guardaron correctamente.',
+                            text: data.message || 'Los datos se guardaron correctamente.',
                             showConfirmButton: false,
-                            timer: 2000
+                            timer: 1600
                         }).then(() => {
                             window.location.href = "{{ route('centrosformacion.index') }}";
+                        });
+                    } else if (data && data.errors) {
+                        const messages = Object.values(data.errors).flat().join('<br>');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Errores de validación',
+                            html: messages
                         });
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: data.message || 'No se pudo actualizar el centro.',
+                            text: data.message || 'No se pudo actualizar el centro.'
                         });
                     }
                 })
                 .catch(error => {
+                    console.error(error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Ocurrió un problema al procesar la solicitud.',
+                        text: 'Ocurrió un problema al procesar la solicitud.'
                     });
-                    console.error(error);
                 });
         });
-    </script>
-</body>
-
-</html>
+    });
+</script>
+@stop

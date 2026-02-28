@@ -1,145 +1,152 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('adminlte::page')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Editar EPS</title>
-    @vite([
-    'resources/css/app.css',
-    'resources/js/app.js',
-    'node_modules/admin-lte/dist/css/adminlte.min.css',
-    'node_modules/admin-lte/plugins/fontawesome-free/css/all.min.css'
-    ])
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
+@section('title', 'Editar EPS')
 
-<body class="hold-transition sidebar-mini">
-    <div class="wrapper">
+@section('content_header')
+<h1>Editar EPS</h1>
+@stop
 
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#">☰</a></li>
-                <li class="nav-item d-none d-sm-inline-block"><a href="/" class="nav-link">Inicio</a></li>
-            </ul>
-        </nav>
+@section('content')
 
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="/" class="brand-link text-center">
-                <span class="brand-text font-weight-light">Sistema Seguimiento</span>
-            </a>
-            <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column">
-                        <li class="nav-item">
-                            <a href="{{ route('eps.index') }}" class="nav-link active">
-                                <i class="fas fa-hospital"></i>
-                                <p>EPS</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
+{{-- Hidden inputs to pass CSRF and flash message safely to JS --}}
+<input type="hidden" id="csrfToken" value="{{ csrf_token() }}">
+<input type="hidden" id="successMessage" value="{{ session('success') ?? '' }}">
 
-        <!-- Content -->
-        <div class="content-wrapper p-4">
-            <section class="content-header">
-                <div class="container-fluid">
-                    <h1>Editar EPS</h1>
-                </div>
-            </section>
-
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-edit"></i> Modificar EPS</h3>
-                        </div>
-                        <form id="formEPS" action="{{ route('eps.update', $dato->NIS) }}" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="numdoc">Número Documento</label>
-                                    <input type="text" class="form-control" id="numdoc" name="Numdoc"
-                                        value="{{ $dato->Numdoc }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="denominacion">Denominación</label>
-                                    <input type="text" class="form-control" id="denominacion" name="Denominacion"
-                                        value="{{ $dato->Denominacion }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="observaciones">Observaciones</label>
-                                    <input type="text" class="form-control" id="observaciones" name="Observaciones"
-                                        value="{{ $dato->Observaciones }}">
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between">
-                                <a href="{{ route('eps.index') }}" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left"></i> Volver
-                                </a>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Actualizar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- Footer -->
-        <footer class="main-footer text-center">
-            <strong>&copy; {{ date('Y') }} Sistema de Seguimiento</strong>
-        </footer>
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-edit"></i> Modificar EPS</h3>
     </div>
 
-    @vite(['resources/js/app.js','node_modules/admin-lte/dist/js/adminlte.min.js'])
+    <form id="formEPSEdit" action="{{ route('eps.update', $dato->NIS) }}" method="POST" novalidate>
+        @csrf
+        @method('PUT')
 
-    <script>
-        document.getElementById('formEPS').addEventListener('submit', function(e) {
+        <div class="card-body">
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            <div class="form-group">
+                <label for="numdoc">Número Documento</label>
+                <input type="text" class="form-control" id="numdoc" name="Numdoc"
+                    value="{{ old('Numdoc', $dato->Numdoc) }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="denominacion">Denominación</label>
+                <input type="text" class="form-control" id="denominacion" name="Denominacion"
+                    value="{{ old('Denominacion', $dato->Denominacion) }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <input type="text" class="form-control" id="observaciones" name="Observaciones"
+                    value="{{ old('Observaciones', $dato->Observaciones) }}">
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between">
+            <a href="{{ route('eps.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+
+            <div>
+                <button type="reset" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-undo"></i> Limpiar
+                </button>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Actualizar
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@stop
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const successMessage = (document.getElementById('successMessage') || {}).value || '';
+        const csrfToken = (document.getElementById('csrfToken') || {}).value || '';
+        const form = document.getElementById('formEPSEdit');
+
+        if (successMessage.trim()) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: successMessage,
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
-            let form = this;
-            fetch(form.action, {
-                    method: form.method,
-                    body: new FormData(form),
+
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                    method: 'POST', // Laravel expects POST with _method=PUT
+                    body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
                 })
-                .then(response => response.json())
+                .then(async response => {
+                    const contentType = response.headers.get('content-type') || '';
+                    if (contentType.includes('application/json')) {
+                        return response.json();
+                    }
+                    return {
+                        success: response.ok
+                    };
+                })
                 .then(data => {
-                    if (data.success) {
+                    if (data && data.success) {
                         Swal.fire({
                             icon: 'success',
-                            title: '¡EPS actualizada!',
-                            text: 'Los datos se guardaron correctamente.',
+                            title: '¡Actualizado!',
+                            text: data.message || 'Los datos se guardaron correctamente.',
                             showConfirmButton: false,
-                            timer: 2000
+                            timer: 1600
                         }).then(() => {
                             window.location.href = "{{ route('eps.index') }}";
+                        });
+                    } else if (data && data.errors) {
+                        const messages = Object.values(data.errors).flat().join('<br>');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Errores de validación',
+                            html: messages
                         });
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: data.message || 'No se pudo actualizar la EPS.',
+                            text: data && data.message ? data.message : 'No se pudo actualizar la EPS.'
                         });
                     }
                 })
                 .catch(error => {
+                    console.error(error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Ocurrió un problema al procesar la solicitud.',
+                        text: 'Ocurrió un problema al procesar la solicitud.'
                     });
-                    console.error(error);
                 });
         });
-    </script>
-</body>
-
-</html>
+    });
+</script>
+@stop

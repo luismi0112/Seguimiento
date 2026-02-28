@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\archivosController;
+use App\Http\Controllers\ArchivosController;
 use App\Http\Controllers\RegionalesController;
 use App\Http\Controllers\AprendicesController;
 use App\Http\Controllers\CentrosformacionController;
@@ -12,11 +12,11 @@ use App\Http\Controllers\InstructoresController;
 use App\Http\Controllers\ProgramasformacionController;
 use App\Http\Controllers\RolesadministrativosController;
 use App\Http\Controllers\TiposdedocumentosController;
+Route::get('/', function () {
+    return view('dashboard');
+})->name('home');
 
-Route::get('/', [archivosController::class, 'index'])->name('archivos.index');
-Route::get('/archivos', [archivosController::class, 'index'])->name('archivos.index');
-Route::post('/archivos', [archivosController::class, 'store'])->name('archivos.store');
-
+Route::resource('archivos', ArchivosController::class);
 Route::resource('regionales', RegionalesController::class);
 Route::resource('aprendices', AprendicesController::class);
 Route::resource('centrosformacion', CentrosformacionController::class);

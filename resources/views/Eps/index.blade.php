@@ -1,118 +1,105 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('adminlte::page')
 
-<head>
-    <meta charset="UTF-8">
-    <title>EPS</title>
-    @vite([
-    'resources/css/app.css',
-    'resources/js/app.js',
-    'node_modules/admin-lte/dist/css/adminlte.min.css',
-    'node_modules/admin-lte/plugins/fontawesome-free/css/all.min.css'
-    ])
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
+@section('title', 'EPS')
 
-<body class="hold-transition sidebar-mini">
-    <div class="wrapper">
+@section('content_header')
+<h1>EPS</h1>
+@stop
 
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#">☰</a></li>
-                <li class="nav-item d-none d-sm-inline-block"><a href="/" class="nav-link">Inicio</a></li>
-            </ul>
-        </nav>
+@section('content')
 
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="/" class="brand-link text-center">
-                <span class="brand-text font-weight-light">Sistema Seguimiento</span>
-            </a>
-            <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column">
-                        <li class="nav-item">
-                            <a href="{{ route('eps.index') }}" class="nav-link active">
-                                <i class="fas fa-hospital"></i>
-                                <p>EPS</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+{{-- Hidden inputs to pass flash message and CSRF token safely to JS --}}
+<input type="hidden" id="successMessage" value="{{ session('success') ?? '' }}">
+<input type="hidden" id="csrfToken" value="{{ csrf_token() }}">
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex w-100 align-items-center">
+            {{-- Left side intentionally empty to remove the "Lista de EPS" text --}}
+            <div class="me-auto"></div>
+
+            {{-- Button aligned to the right --}}
+            <div>
+                <a href="{{ route('eps.create') }}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Nueva EPS
+                </a>
             </div>
-        </aside>
-
-        <!-- Content -->
-        <div class="content-wrapper p-4">
-            <section class="content-header">
-                <div class="container-fluid">
-                    <h1>Lista de EPS</h1>
-                </div>
-            </section>
-
-            <section class="content">
-                <div class="container-fluid">
-                    <a href="{{ route('eps.create') }}" class="btn btn-success mb-3">
-                        <i class="fas fa-plus"></i> Nueva EPS
-                    </a>
-                    <div class="card">
-                        <div class="card-body">
-                            <table class="table table-bordered table-striped">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>NIS</th>
-                                        <th>Documento</th>
-                                        <th>Denominación</th>
-                                        <th>Observaciones</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($datos as $e)
-                                    <tr>
-                                        <td>{{ $e->NIS }}</td>
-                                        <td>{{ $e->Numdoc }}</td>
-                                        <td>{{ $e->Denominacion }}</td>
-                                        <td>{{ $e->Observaciones }}</td>
-                                        <td>
-                                            <a href="{{ route('eps.edit', $e->NIS) }}" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-edit"></i> Editar
-                                            </a>
-                                            <form action="{{ route('eps.destroy', $e->NIS) }}" method="POST" style="display:inline;" class="delete-form">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm">
-                                                    <i class="fas fa-trash"></i> Eliminar
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center">Sin registros</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
-
-        <!-- Footer -->
-        <footer class="main-footer text-center">
-            <strong>&copy; {{ date('Y') }} Sistema de Seguimiento</strong>
-        </footer>
     </div>
 
-    @vite(['resources/js/app.js','node_modules/admin-lte/dist/js/adminlte.min.js'])
+    <div class="card-body table-responsive p-0">
+        <table class="table table-bordered table-striped mb-0">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>NIS</th>
+                    <th>Documento</th>
+                    <th>Denominación</th>
+                    <th>Observaciones</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($datos as $e)
+                <tr>
+                    <td>{{ $e->NIS }}</td>
+                    <td>{{ $e->Numdoc }}</td>
+                    <td>{{ $e->Denominacion }}</td>
+                    <td>{{ $e->Observaciones }}</td>
+                    <td class="text-center">
+                        <a href="{{ route('eps.edit', $e->NIS) }}" class="btn btn-primary btn-sm" title="Editar">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
 
-    <script>
-        // Animación SweetAlert2 para eliminar
+                        <form action="{{ route('eps.destroy', $e->NIS) }}" method="POST" class="d-inline delete-form">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center py-4">Sin registros</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    @if(method_exists($datos, 'links'))
+    <div class="card-footer clearfix">
+        {{ $datos->links() }}
+    </div>
+    @endif
+</div>
+
+@stop
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Read flash message and CSRF token from hidden inputs (avoids Blade inside JS)
+        const successMessage = (document.getElementById('successMessage') || {}).value || '';
+        const csrfToken = (document.getElementById('csrfToken') || {}).value || '';
+
+        if (successMessage.trim()) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: successMessage,
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
         document.querySelectorAll('.delete-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
+
                 Swal.fire({
                     title: '¿Estás seguro?',
                     text: "Esta acción eliminará la EPS definitivamente.",
@@ -124,32 +111,59 @@
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        fetch(this.action, {
-                                method: this.method,
-                                body: new FormData(this),
+                        const action = this.action;
+                        const methodInput = this.querySelector('input[name="_method"]');
+                        const method = methodInput ? methodInput.value.toUpperCase() : this.method.toUpperCase();
+                        const formData = new FormData(this);
+
+                        fetch(action, {
+                                method: method,
+                                body: formData,
                                 headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                }
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                },
                             })
-                            .then(response => response.json())
+                            .then(async response => {
+                                const contentType = response.headers.get('content-type') || '';
+                                if (contentType.includes('application/json')) {
+                                    return response.json();
+                                }
+                                return {
+                                    success: response.ok
+                                };
+                            })
                             .then(data => {
-                                if (data.success) {
+                                if (data && data.success) {
                                     Swal.fire({
                                         icon: 'success',
                                         title: '¡Eliminada!',
-                                        text: 'La EPS se eliminó correctamente.',
+                                        text: data.message || 'La EPS se eliminó correctamente.',
                                         showConfirmButton: false,
-                                        timer: 2000
+                                        timer: 1500
                                     }).then(() => {
-                                        window.location.reload();
+                                        window.location.href = "{{ route('eps.index') }}";
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data && data.message ? data.message : 'No se pudo eliminar la EPS.',
                                     });
                                 }
+                            })
+                            .catch(error => {
+                                console.error(error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Ocurrió un problema al procesar la solicitud.',
+                                });
                             });
                     }
                 });
             });
         });
-    </script>
-</body>
-
-</html>
+    });
+</script>
+@stop

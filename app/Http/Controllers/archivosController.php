@@ -3,38 +3,80 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\archivos;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
-class archivosController extends Controller
+class ArchivosController extends Controller
 {
+    
     public function index()
     {
-        $archivos = archivos::all();
-        return view('welcome', compact('archivos'));
+        $dir = 'archivos';
+        $files = [];
+
+        if (Storage::disk('public')->exists($dir)) {
+            $paths = Storage::disk('public')->files($dir);
+
+            $files = collect($paths)->map(function ($path) {
+                return [
+                    'path' => $path,
+                    'url'  => Storage::disk('public')->url($path),
+                    'name' => basename($path),
+                    'size' => Storage::disk('public')->size($path),
+                ];
+            })->toArray();
+        }
+
+        return view('archivos.index', compact('files'));
     }
 
+    public function create()
+    {
+        return view('archivos.create');
+    }
+
+    /**
+     * Guardar archivo subido en disco public/archivos
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:100',
-            'archivo' => 'required|file'
+            'archivo' => 'required|file|max:10240', // 10 MB
         ]);
 
         $file = $request->file('archivo');
-        $fileName = time() . '_' . $file->getClientOriginalName();
+        $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
 
-        $file->storeAs('archivos', $fileName, 'public');
-
-        $now = Carbon::now();
-
-        archivos::create([
-            'nombre' => $request->nombre,
-            'fecha' => $now->toDateString(),
-            'hora' => $now->toTimeString(),
-            'ruta' => $fileName
-        ]);
+        $path = $file->storeAs('archivos', $filename, 'public');
 
         return redirect()->route('archivos.index')->with('success', 'Archivo subido correctamente');
+    }
+
+    /**
+     * Descargar archivo
+     */
+    public function download($filename)
+    {
+        $path = 'archivos/' . $filename;
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->download($path);
+        }
+
+        return redirect()->route('archivos.index')->with('error', 'El archivo no existe');
+    }
+
+    /**
+     * Eliminar archivo
+     */
+    public function destroy($filename)
+    {
+        $path = 'archivos/' . $filename;
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+            return redirect()->route('archivos.index')->with('success', 'Archivo eliminado correctamente');
+        }
+
+        return redirect()->route('archivos.index')->with('error', 'El archivo no existe');
     }
 }

@@ -1,80 +1,69 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Eliminar Ficha de Caracterización</title>
-    @vite([
-        'resources/css/app.css',
-        'resources/js/app.js',
-        'node_modules/admin-lte/dist/css/adminlte.min.css',
-        'node_modules/admin-lte/dist/js/adminlte.min.js',
-        'node_modules/admin-lte/plugins/fontawesome-free/css/all.min.css'
-    ])
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body class="hold-transition sidebar-mini">
-<div class="wrapper">
+@extends('adminlte::page')
 
-    <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-        <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#">☰</a></li>
-            <li class="nav-item d-none d-sm-inline-block"><a href="/" class="nav-link">Inicio</a></li>
-        </ul>
-    </nav>
+@section('title', 'Eliminar Ficha de Caracterización')
 
-    <!-- Sidebar -->
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <a href="/" class="brand-link text-center">
-            <span class="brand-text font-weight-light">Sistema Seguimiento</span>
+@section('content_header')
+<h1>Eliminar Ficha de Caracterización</h1>
+@stop
+
+@section('content')
+
+{{-- Hidden inputs for JS (CSRF, flash message, redirect URL) --}}
+<input type="hidden" id="csrfToken" value="{{ csrf_token() }}">
+<input type="hidden" id="successMessage" value="{{ session('success') ?? '' }}">
+<input type="hidden" id="indexUrl" value="{{ route('fichas.index') }}">
+
+<div class="card card-danger">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-trash"></i> Confirmar Eliminación</h3>
+    </div>
+
+    <div class="card-body">
+        <p>
+            ¿Estás seguro de que deseas eliminar la ficha
+            <strong>{{ $dato->Denominacion }}</strong> con código
+            <strong>{{ $dato->Codigo }}</strong>?
+        </p>
+        <p class="text-danger">Esta acción no se puede deshacer.</p>
+    </div>
+
+    <div class="card-footer d-flex justify-content-between">
+        <a href="{{ route('fichas.index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Cancelar
         </a>
-        <div class="sidebar">
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column">
-                    <li class="nav-item">
-                        <a href="{{ route('fichas.index') }}" class="nav-link active">
-                            <i class="nav-icon fas fa-id-card"></i>
-                            <p>Fichas</p>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </aside>
 
-    <!-- Content -->
-    <div class="content-wrapper p-4">
-        <section class="content-header">
-            <h1>Eliminar Ficha de Caracterización</h1>
-        </section>
+        <form id="deleteForm" action="{{ route('fichas.destroy', $dato->NIS) }}" method="POST" class="m-0">
+            @csrf
+            @method('DELETE')
 
-        <section class="content">
-            <div class="card card-danger">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-trash"></i> Confirmar Eliminación</h3>
-                </div>
-                <div class="card-body">
-                    <p>¿Estás seguro de que deseas eliminar la ficha <strong>{{ $dato->Denominacion }}</strong> con código <strong>{{ $dato->Codigo }}</strong>?</p>
-                </div>
-                <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ route('fichas.index') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Cancelar
-                    </a>
-                    <form action="{{ route('fichas.destroy', $dato->NIS) }}" method="POST" id="deleteForm">
-                        @csrf
-                        @method('DELETE')
-                        <button type="button" class="btn btn-danger" id="btnDelete">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </section>
+            <button type="button" id="btnDelete" class="btn btn-danger" aria-label="Eliminar ficha">
+                <i class="fas fa-trash"></i> Eliminar
+            </button>
+        </form>
     </div>
 </div>
 
+@stop
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        const successMessage = (document.getElementById('successMessage') || {}).value || '';
+        const csrfToken = (document.getElementById('csrfToken') || {}).value || '';
+        const indexUrl = (document.getElementById('indexUrl') || {}).value || '{{ route("fichas.index") }}';
+
+        if (successMessage.trim()) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: successMessage,
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
         const btnDelete = document.getElementById('btnDelete');
         const form = document.getElementById('deleteForm');
 
@@ -89,29 +78,60 @@
                 confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
+                if (!result.isConfirmed) return;
+
+                // Prepare request using the form data (includes _method and CSRF token)
+                const action = form.action;
+                const methodInput = form.querySelector('input[name="_method"]');
+                const method = methodInput ? methodInput.value.toUpperCase() : 'POST';
+                const formData = new FormData(form);
+
+                fetch(action, {
+                        method: method,
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                    })
+                    .then(async response => {
+                        const contentType = response.headers.get('content-type') || '';
+                        if (contentType.includes('application/json')) {
+                            return response.json();
+                        }
+                        return {
+                            success: response.ok
+                        };
+                    })
+                    .then(data => {
+                        if (data && data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Eliminada!',
+                                text: data.message || 'La ficha se eliminó correctamente.',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.href = indexUrl;
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data && data.message ? data.message : 'No se pudo eliminar la ficha.',
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ocurrió un problema al procesar la solicitud.',
+                        });
+                    });
             });
         });
     });
 </script>
-
-@if(session('success'))
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        Swal.fire({
-            icon: 'success',
-            title: '¡Éxito!',
-            text: "{{ session('success') }}",
-            showConfirmButton: false,
-            timer: 2000
-        });
-    });
-</script>
-@endif
-
-</script>
-
-</body>
-</html>
+@stop

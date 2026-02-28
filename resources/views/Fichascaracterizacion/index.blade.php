@@ -1,148 +1,177 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('adminlte::page')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Fichas de Caracterización</title>
-    @vite(['resources/css/app.css','node_modules/admin-lte/dist/css/adminlte.min.css'])
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
+@section('title', 'Fichas de Caracterización')
 
-<body class="hold-transition sidebar-mini">
-    <div class="wrapper">
+@section('content_header')
+<h1>Fichas</h1>
+@stop
 
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#">☰</a></li>
-                <li class="nav-item d-none d-sm-inline-block"><a href="/" class="nav-link">Inicio</a></li>
-            </ul>
-        </nav>
+@section('content')
 
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="/" class="brand-link"><span class="brand-text font-weight-light">Sistema Seguimiento</span></a>
-            <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column">
-                        <li class="nav-item">
-                            <a href="{{ route('fichas.index') }}" class="nav-link active">
-                                <i class="nav-icon fas fa-id-card"></i>
-                                <p>Fichas</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
+{{-- Hidden inputs to pass flash message and CSRF token safely to JS --}}
+<input type="hidden" id="successMessage" value="{{ session('success') ?? '' }}">
+<input type="hidden" id="csrfToken" value="{{ csrf_token() }}">
 
-        <!-- Content -->
-        <div class="content-wrapper p-4">
-            <section class="content-header">
-                <h1>Lista de Fichas de Caracterización</h1>
-            </section>
-
-            <section class="content">
-                <div class="container-fluid">
-
-                    @if(session('success'))
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function() {
-                            Swal.fire({
-                                icon: 'success',
-                                title: '¡Éxito!',
-                                text: "{{ session('success') }}",
-                                showConfirmButton: false,
-                                timer: 2000
-                            });
-                        });
-                    </script>
-                    @endif
-
-                    <a href="{{ route('fichas.create') }}" class="btn btn-success mb-3">
-                        <i class="fas fa-plus"></i> Agregar Nueva Ficha
-                    </a>
-
-                    <div class="card">
-                        <div class="card-body">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>NIS</th>
-                                        <th>Código</th>
-                                        <th>Denominación</th>
-                                        <th>Cupo</th>
-                                        <th>Fecha Inicio</th>
-                                        <th>Fecha Fin</th>
-                                        <th>Observaciones</th>
-                                        <th>Programa</th>
-                                        <th>Centro</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($datos as $ficha)
-                                    <tr>
-                                        <td>{{ $ficha->NIS }}</td>
-                                        <td>{{ $ficha->Codigo }}</td>
-                                        <td>{{ $ficha->Denominacion }}</td>
-                                        <td>{{ $ficha->Cupo }}</td>
-                                        <td>{{ $ficha->Fechainicio }}</td>
-                                        <td>{{ $ficha->Fechafin }}</td>
-                                        <td>{{ $ficha->Observaciones }}</td>
-                                        <td>{{ $ficha->programa ? $ficha->programa->Denominacion : 'Sin programa' }}</td>
-                                        <td>{{ $ficha->centro ? $ficha->centro->Denominacion : 'Sin centro' }}</td>
-                                        <td>
-                                            <a href="{{ route('fichas.edit', $ficha->NIS) }}" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-edit"></i> Editar
-                                            </a>
-                                            <form action="{{ route('fichas.destroy', $ficha->NIS) }}" method="POST" class="d-inline deleteForm">
-                                                @csrf @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm btnDelete">
-                                                    <i class="fas fa-trash"></i> Eliminar
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="10" class="text-center">No hay registros</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
+<div class="card">
+    <div class="card-header d-flex align-items-center">
+        <div class="ms-auto">
+            <a href="{{ route('fichas.create') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Agregar Nueva Ficha
+            </a>
         </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const deleteButtons = document.querySelectorAll('.btnDelete');
-            deleteButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const form = this.closest('form');
-                    Swal.fire({
-                        title: '¿Estás seguro?',
-                        text: "Esta acción eliminará la ficha definitivamente.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Sí, eliminar',
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
+    <div class="card-body table-responsive p-0">
+        <table class="table table-bordered table-striped mb-0">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>NIS</th>
+                    <th>Código</th>
+                    <th>Denominación</th>
+                    <th>Cupo</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                    <th>Observaciones</th>
+                    <th>Programa</th>
+                    <th>Centro</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($datos as $ficha)
+                <tr>
+                    <td>{{ $ficha->NIS }}</td>
+                    <td>{{ $ficha->Codigo }}</td>
+                    <td>{{ $ficha->Denominacion }}</td>
+                    <td>{{ $ficha->Cupo }}</td>
+                    <td>{{ $ficha->Fechainicio }}</td>
+                    <td>{{ $ficha->Fechafin }}</td>
+                    <td>{{ $ficha->Observaciones }}</td>
+                    <td>{{ $ficha->programa ? $ficha->programa->Denominacion : 'Sin programa' }}</td>
+                    <td>{{ $ficha->centro ? $ficha->centro->Denominacion : 'Sin centro' }}</td>
+                    <td class="text-center">
+                        <a href="{{ route('fichas.edit', $ficha->NIS) }}"
+                            class="btn btn-primary btn-sm me-1"
+                            title="Editar"
+                            aria-label="Editar ficha {{ $ficha->NIS }}">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+
+                        <form action="{{ route('fichas.destroy', $ficha->NIS) }}" method="POST" class="d-inline delete-form m-0">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button"
+                                class="btn btn-danger btn-sm btn-delete"
+                                title="Eliminar"
+                                aria-label="Eliminar ficha {{ $ficha->NIS }}">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="10" class="text-center py-4">No hay registros</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    @if(method_exists($datos, 'links'))
+    <div class="card-footer clearfix">
+        {{ $datos->links() }}
+    </div>
+    @endif
+</div>
+
+@stop
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const successMessage = (document.getElementById('successMessage') || {}).value || '';
+        const csrfToken = (document.getElementById('csrfToken') || {}).value || '';
+
+        if (successMessage.trim()) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: successMessage,
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('form');
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "Esta acción eliminará la ficha definitivamente.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const action = form.action;
+                        const methodInput = form.querySelector('input[name=\"_method\"]');
+                        const method = methodInput ? methodInput.value.toUpperCase() : form.method.toUpperCase();
+                        const formData = new FormData(form);
+
+                        fetch(action, {
+                                method: method,
+                                body: formData,
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                },
+                            })
+                            .then(async response => {
+                                const contentType = response.headers.get('content-type') || '';
+                                if (contentType.includes('application/json')) {
+                                    return response.json();
+                                }
+                                return {
+                                    success: response.ok
+                                };
+                            })
+                            .then(data => {
+                                if (data && data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: '¡Eliminada!',
+                                        text: data.message || 'La ficha se eliminó correctamente.',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    }).then(() => {
+                                        window.location.href = "{{ route('fichas.index') }}";
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data && data.message ? data.message : 'No se pudo eliminar la ficha.',
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error(error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Ocurrió un problema al procesar la solicitud.',
+                                });
+                            });
+                    }
                 });
             });
         });
-    </script>
-
-</body>
-
-</html>
+    });
+</script>
+@stop
