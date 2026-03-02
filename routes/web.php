@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ArchivosController;
 use App\Http\Controllers\RegionalesController;
 use App\Http\Controllers\AprendicesController;
@@ -12,10 +13,8 @@ use App\Http\Controllers\InstructoresController;
 use App\Http\Controllers\ProgramasformacionController;
 use App\Http\Controllers\RolesadministrativosController;
 use App\Http\Controllers\TiposdedocumentosController;
-Route::get('/', function () {
-    return view('dashboard');
-})->name('home');
 
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::resource('archivos', ArchivosController::class);
 Route::resource('regionales', RegionalesController::class);
 Route::resource('aprendices', AprendicesController::class);

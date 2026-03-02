@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 class ArchivosController extends Controller
 {
-    
     public function index()
     {
         $dir = 'archivos';
@@ -18,59 +20,66 @@ class ArchivosController extends Controller
 
             $files = collect($paths)->map(function ($path) {
                 return [
-                    'path' => $path,
-                    'url'  => Storage::disk('public')->url($path),
-                    'name' => basename($path),
-                    'size' => Storage::disk('public')->size($path),
+                    'path'       => $path,
+                    'url'        => Storage::url($path),
+                    'name'       => basename($path),
+                    'created_at' => Carbon::createFromTimestamp(
+                        Storage::disk('public')->lastModified($path)
+                    )->format('d/m/Y H:i'),
                 ];
             })->toArray();
         }
 
-        return view('archivos.index', compact('files'));
+        return view('Archivo.index', compact('files'));
     }
 
     public function create()
     {
-        return view('archivos.create');
+        return view('Archivo.create');
     }
 
-    /**
-     * Guardar archivo subido en disco public/archivos
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'archivo' => 'required|file|max:10240', // 10 MB
+            'nombre'  => 'required|string|max:255',
+            'archivo' => 'required|file|max:10240',
+            'correo'  => 'nullable|email'
         ]);
 
         $file = $request->file('archivo');
-        $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
+        $customName = Str::slug($request->input('nombre'));
+        $filename = time() . '_' . $customName . '.' . $file->getClientOriginalExtension();
 
-        $path = $file->storeAs('archivos', $filename, 'public');
+        $file->storeAs('archivos', $filename, 'public');
+
+        if ($request->filled('correo')) {
+            Mail::raw("Se ha subido un nuevo archivo llamado: {$filename}", function ($message) use ($request) {
+                $message->to($request->correo)
+                    ->subject('Nuevo archivo subido al sistema');
+            });
+        }
 
         return redirect()->route('archivos.index')->with('success', 'Archivo subido correctamente');
     }
 
-    /**
-     * Descargar archivo
-     */
-    public function download($filename)
+    public function show($id)
     {
-        $path = 'archivos/' . $filename;
-
-        if (Storage::disk('public')->exists($path)) {
-            return Storage::disk('public')->download($path);
-        }
-
-        return redirect()->route('archivos.index')->with('error', 'El archivo no existe');
+        abort(404);
     }
 
-    /**
-     * Eliminar archivo
-     */
-    public function destroy($filename)
+    public function edit($id)
     {
-        $path = 'archivos/' . $filename;
+        abort(404);
+    }
+
+    public function update(Request $request, $id)
+    {
+        abort(404);
+    }
+
+    public function destroy($id)
+    {
+        $path = 'archivos/' . $id;
 
         if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);
