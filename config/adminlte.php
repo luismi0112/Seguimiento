@@ -69,6 +69,7 @@ return [
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
     'logo_img_alt' => 'Logo Sistema Seguimiento',
+    'url' => '/home',
 
     /*
     |--------------------------------------------------------------------------
@@ -91,6 +92,7 @@ return [
             'class' => '',
             'width' => 50,
             'height' => 50,
+            'url' => '/home',
         ],
     ],
 
@@ -118,6 +120,7 @@ return [
             'effect' => 'animation__shake',
             'width' => 60,
             'height' => 60,
+            'url' => '/home',
         ],
     ],
 
@@ -257,7 +260,7 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'dashboard',
+    'dashboard_url' => '/home',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
@@ -392,9 +395,9 @@ return [
         ],
         ['header' => 'labels'],
         [
-            'text' => 'important',
+            'text' => 'Cerrar Sesión',
             'icon_color' => 'red',
-            'url' => '#',
+            'url' => 'logout',
         ],
         [
             'text' => 'warning',
