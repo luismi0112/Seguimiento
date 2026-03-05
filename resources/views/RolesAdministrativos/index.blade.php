@@ -41,6 +41,12 @@
                     <td>{{ $rol->NIS }}</td>
                     <td>{{ $rol->Descripcion }}</td>
                     <td>
+
+                        <a href="{{ route('rolesadministrativos.show', $rol->NIS) }}"
+                            class="btn btn-info btn-sm me-1" title="Detalles rol {{ $rol->NIS }}">
+                            <i class="fas fa-eye"></i> Detalles
+                        </a>
+
                         <a href="{{ route('rolesadministrativos.edit', ['rolesadministrativo' => $rol->NIS]) }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-edit"></i> Editar
                         </a>

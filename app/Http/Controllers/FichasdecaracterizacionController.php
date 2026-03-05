@@ -15,6 +15,12 @@ class FichasdecaracterizacionController extends Controller
         return view('Fichascaracterizacion.index', compact('datos'));
     }
 
+    public function show($id)
+    {
+        $ficha = Fichasdecaracterizacion::with(['programa', 'centro'])->findOrFail($id);
+        return view('Fichascaracterizacion.show', compact('ficha'));
+    }
+
     public function create()
     {
         $programas = Programasformacion::all();

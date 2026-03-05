@@ -20,6 +20,12 @@ class CentrosformacionController extends Controller
         return view('centrosformacion.create', compact('regionales'));
     }
 
+    public function show($id)
+    {
+        $centro = Centrosformacion::with('regional')->findOrFail($id);
+        return view('centrosformacion.show', compact('centro'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -36,7 +42,6 @@ class CentrosformacionController extends Controller
             'tblregionales_NIS' => $request->tblregionales_NIS
         ]);
 
-        // Devolver JSON para SweetAlert2
         return response()->json(['success' => true], 200);
     }
 

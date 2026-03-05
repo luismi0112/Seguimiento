@@ -39,6 +39,11 @@
                     <td>{{ $aprendiz->CorreoPersonal }}</td>
                     <td class="text-center">
 
+                        <a href="{{ route('aprendices.show', $aprendiz->NIS) }}"
+                            class="btn btn-sm btn-info me-1">
+                            <i class="fas fa-eye"></i> Detalles
+                        </a>
+
                         <a href="{{ route('aprendices.edit',$aprendiz->NIS) }}"
                             class="btn btn-primary btn-sm">
                             <i class="fas fa-edit"></i> Editar

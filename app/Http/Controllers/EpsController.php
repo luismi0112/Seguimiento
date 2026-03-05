@@ -18,6 +18,12 @@ class EpsController extends Controller
         return view('eps.create');
     }
 
+    public function show($id)
+    {
+        $eps = Eps::findOrFail($id);
+        return view('eps.show', compact('eps'));
+    }
+
     public function store(Request $request)
     {
         try {

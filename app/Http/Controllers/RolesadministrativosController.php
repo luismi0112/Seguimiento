@@ -18,6 +18,13 @@ class RolesadministrativosController extends Controller
         return view('RolesAdministrativos.create');
     }
 
+    public function show($id)
+    {
+        $rol = Rolesadministrativos::findOrFail($id);
+        return view('rolesadministrativos.show', compact('rol'));
+    }
+
+
     public function store(Request $request)
     {
         Rolesadministrativos::create($request->all());

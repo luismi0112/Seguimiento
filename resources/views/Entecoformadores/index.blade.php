@@ -3,7 +3,7 @@
 @section('title', 'Entes Coformadores')
 
 @section('content_header')
-    <h1>Entes Coformadores</h1>
+<h1>Entes Coformadores</h1>
 @stop
 
 @section('content')
@@ -46,6 +46,11 @@
                     <td>{{ $ente->CorreoInstitucional }}</td>
                     <td class="text-center">
 
+                        <a href="{{ route('entecoformadores.show', $ente->NIS) }}"
+                            class="btn btn-info btn-sm" title="Detalles">
+                            <i class="fas fa-eye"></i> Detalles
+                        </a>
+                        
                         <a href="{{ route('entecoformadores.edit', $ente->NIS) }}"
                             class="btn btn-primary btn-sm" title="Editar">
                             <i class="fas fa-edit"></i> Editar
@@ -74,9 +79,9 @@
     </div>
 
     @if(method_exists($datos, 'links'))
-        <div class="card-footer clearfix">
-            {{ $datos->links() }}
-        </div>
+    <div class="card-footer clearfix">
+        {{ $datos->links() }}
+    </div>
     @endif
 </div>
 
@@ -86,88 +91,88 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Read flash message from hidden input (no Blade inside JS)
-    const successInput = document.getElementById('successMessage');
-    const successMessage = successInput ? successInput.value.trim() : '';
+    document.addEventListener('DOMContentLoaded', function() {
+        const successInput = document.getElementById('successMessage');
+        const successMessage = successInput ? successInput.value.trim() : '';
 
-    if (successMessage) {
-        Swal.fire({
-            icon: 'success',
-            title: '¡Éxito!',
-            text: successMessage,
-            showConfirmButton: false,
-            timer: 2000
-        });
-    }
-
-    // Attach delete handlers
-    document.querySelectorAll('.deleteForm').forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
+        if (successMessage) {
             Swal.fire({
-                title: '¿Estás seguro?',
-                text: "Esta acción eliminará el ente coformador definitivamente.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const action = this.action;
-                    const methodInput = this.querySelector('input[name="_method"]');
-                    const method = methodInput ? methodInput.value : this.method;
-                    const formData = new FormData(this);
+                icon: 'success',
+                title: '¡Éxito!',
+                text: successMessage,
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
 
-                    fetch(action, {
-                        method: method.toUpperCase(),
-                        body: formData,
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        },
-                    })
-                    .then(async response => {
-                        const contentType = response.headers.get('content-type') || '';
-                        if (contentType.includes('application/json')) {
-                            return response.json();
-                        }
-                        return { success: response.ok };
-                    })
-                    .then(data => {
-                        if (data && data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: '¡Eliminado!',
-                                text: data.message || 'El ente coformador se eliminó correctamente.',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                location.reload();
+        document.querySelectorAll('.deleteForm').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "Esta acción eliminará el ente coformador definitivamente.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const action = this.action;
+                        const methodInput = this.querySelector('input[name="_method"]');
+                        const method = methodInput ? methodInput.value : this.method;
+                        const formData = new FormData(this);
+
+                        fetch(action, {
+                                method: method.toUpperCase(),
+                                body: formData,
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                            })
+                            .then(async response => {
+                                const contentType = response.headers.get('content-type') || '';
+                                if (contentType.includes('application/json')) {
+                                    return response.json();
+                                }
+                                return {
+                                    success: response.ok
+                                };
+                            })
+                            .then(data => {
+                                if (data && data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: '¡Eliminado!',
+                                        text: data.message || 'El ente coformador se eliminó correctamente.',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data && data.message ? data.message : 'No se pudo eliminar el ente.',
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error(error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Ocurrió un problema al procesar la solicitud.',
+                                });
                             });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: data && data.message ? data.message : 'No se pudo eliminar el ente.',
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Ocurrió un problema al procesar la solicitud.',
-                        });
-                    });
-                }
+                    }
+                });
             });
         });
     });
-});
 </script>
 @stop

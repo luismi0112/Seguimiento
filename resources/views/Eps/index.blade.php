@@ -46,6 +46,12 @@
                     <td>{{ $e->Denominacion }}</td>
                     <td>{{ $e->Observaciones }}</td>
                     <td class="text-center">
+
+                        <a href="{{ route('eps.show', $e->NIS) }}"
+                            class="btn btn-info btn-sm" title="Detalles">
+                            <i class="fas fa-eye"></i> Detalles
+                        </a>
+                        
                         <a href="{{ route('eps.edit', $e->NIS) }}" class="btn btn-primary btn-sm" title="Editar">
                             <i class="fas fa-edit"></i> Editar
                         </a>
@@ -82,7 +88,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Read flash message and CSRF token from hidden inputs (avoids Blade inside JS)
         const successMessage = (document.getElementById('successMessage') || {}).value || '';
         const csrfToken = (document.getElementById('csrfToken') || {}).value || '';
 

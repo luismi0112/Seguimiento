@@ -37,6 +37,11 @@
                     <td>{{ $centro->regional->Denominacion ?? 'Sin regional' }}</td>
                     <td class="text-center">
 
+                        <a href="{{ route('centrosformacion.show', $centro->NIS) }}"
+                            class="btn btn-info btn-sm" title="Detalles">
+                            <i class="fas fa-eye"></i> Detalles
+                        </a>
+
                         <a href="{{ route('centrosformacion.edit', $centro->NIS) }}"
                             class="btn btn-primary btn-sm" title="Editar">
                             <i class="fas fa-edit"></i> Editar

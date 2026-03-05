@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\aprendices;
 use App\Models\Tiposdedocumentos;
 use App\Models\Fichasdecaracterizacion;
+use Illuminate\Support\Facades\Hash;
 
 class AprendicesController extends Controller
 {
@@ -21,6 +22,12 @@ class AprendicesController extends Controller
         $fichas = Fichasdecaracterizacion::all();
         return view('aprendices.create', compact('tiposdocumentos', 'fichas'));
     }
+    public function show($id)
+    {
+        $aprendiz = Aprendices::with(['tipoDocumento', 'eps', 'ficha'])->findOrFail($id);
+        return view('aprendices.show', compact('aprendiz'));
+    }
+
 
     public function store(Request $request)
     {
@@ -42,7 +49,7 @@ class AprendicesController extends Controller
             $aprendiz = new aprendices();
             $aprendiz->tbltiposdocumentos_NIS = $request->tbltiposdocumentos_NIS;
             $aprendiz->Numdoc = $request->Numdoc;
-            $aprendiz->Nombres = $request->Nombres;
+            $aprendiz->Nombres = Hash::make($request->Nombres);
             $aprendiz->Apellidos = $request->Apellidos;
             $aprendiz->Direccion = $request->Direccion;
             $aprendiz->Telefono = $request->Telefono;

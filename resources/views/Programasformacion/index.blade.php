@@ -47,6 +47,12 @@
                     <td>{{ $programa->Duracion }} semestres</td>
                     <td>{{ $programa->Observaciones }}</td>
                     <td>
+
+                        <a href="{{ route('programasformacion.show', $programa->NIS) }}"
+                            class="btn btn-info btn-sm me-1" title="Detalles programa {{ $programa->NIS }}">
+                            <i class="fas fa-eye"></i> Detalles
+                        </a>
+                        
                         <a href="{{ route('programasformacion.edit',$programa->NIS) }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-edit"></i> Editar
                         </a>

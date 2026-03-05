@@ -18,6 +18,13 @@ class ProgramasformacionController extends Controller
         return view('programasformacion.create');
     }
 
+    public function show($id)
+    {
+        $programa = Programasformacion::findOrFail($id);
+        return view('programasformacion.show', compact('programa'));
+    }
+
+
     public function store(Request $request)
     {
         $request->validate([

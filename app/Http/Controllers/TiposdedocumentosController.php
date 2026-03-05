@@ -18,6 +18,13 @@ class TiposdedocumentosController extends Controller
         return view('tiposdocumentos.create');
     }
 
+    public function show($id)
+    {
+        $tipo = Tiposdedocumentos::findOrFail($id);
+        return view('tiposdocumentos.show', compact('tipo'));
+    }
+
+
     public function store(Request $request)
     {
         Tiposdedocumentos::create($request->all());

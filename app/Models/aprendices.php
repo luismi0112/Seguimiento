@@ -13,7 +13,6 @@ class aprendices extends Model
     protected $primaryKey = 'NIS';
     public $timestamps = false;
 
-    // Muy importante: indicar que la PK es numérica y autoincremental
     protected $keyType = 'int';
     public $incrementing = true;
 

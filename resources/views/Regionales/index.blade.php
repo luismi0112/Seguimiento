@@ -46,6 +46,12 @@
                     <td>{{ $regional->Denominacion }}</td>
                     <td>{{ $regional->Observaciones }}</td>
                     <td>
+
+                        <a href="{{ route('regionales.show', $regional->NIS) }}"
+                            class="btn btn-info btn-sm me-1" title="Detalles regional {{ $regional->NIS }}">
+                            <i class="fas fa-eye"></i> Detalles
+                        </a>
+                        
                         <a href="{{ route('regionales.edit', $regional->NIS) }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-edit"></i> Editar
                         </a>

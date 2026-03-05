@@ -54,6 +54,12 @@
                     <td>{{ $inst->Sexo == 1 ? 'Masculino' : 'Femenino' }}</td>
                     <td>{{ $inst->FechaNacimiento }}</td>
                     <td class="text-center">
+
+                        <a href="{{ route('instructores.show', $inst->NIS) }}"
+                            class="btn btn-info btn-sm me-1" title="Detalles instructor {{ $inst->NIS }}">
+                            <i class="fas fa-eye"></i> Detalles
+                        </a>
+
                         <a href="{{ route('instructores.edit', $inst->NIS) }}"
                             class="btn btn-primary btn-sm me-1"
                             title="Editar instructor {{ $inst->NIS }}">

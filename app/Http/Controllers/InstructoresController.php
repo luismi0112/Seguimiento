@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\instructores; 
+use App\Models\instructores;
 
 class InstructoresController extends Controller
 {
@@ -11,6 +11,12 @@ class InstructoresController extends Controller
     {
         $instructores = instructores::all();
         return view('instructores.index', compact('instructores'));
+    }
+
+    public function show($id)
+    {
+        $instructor = instructores::findOrFail($id);
+        return view('instructores.show', compact('instructor'));
     }
 
     public function create()

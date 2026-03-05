@@ -9,14 +9,21 @@ class RegionalesController extends Controller
 {
     public function index()
     {
-        $regionales = Regionales::all(); 
-        return view('regionales.index', compact('regionales')); 
+        $regionales = Regionales::all();
+        return view('regionales.index', compact('regionales'));
     }
 
     public function create()
     {
         return view('regionales.create');
     }
+
+    public function show($id)
+    {
+        $regional = Regionales::findOrFail($id);
+        return view('regionales.show', compact('regional'));
+    }
+
 
     public function store(Request $request)
     {

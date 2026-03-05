@@ -50,6 +50,12 @@
                     <td>{{ $ficha->programa ? $ficha->programa->Denominacion : 'Sin programa' }}</td>
                     <td>{{ $ficha->centro ? $ficha->centro->Denominacion : 'Sin centro' }}</td>
                     <td class="text-center">
+
+                        <a href="{{ route('fichas.show', $ficha->NIS) }}"
+                            class="btn btn-info btn-sm me-1" title="Detalles">
+                            <i class="fas fa-eye"></i> Detalles
+                        </a>
+
                         <a href="{{ route('fichas.edit', $ficha->NIS) }}"
                             class="btn btn-primary btn-sm me-1"
                             title="Editar"

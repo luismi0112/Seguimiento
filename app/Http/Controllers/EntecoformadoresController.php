@@ -19,6 +19,12 @@ class EntecoformadoresController extends Controller
         $tiposDocumento = Tiposdedocumentos::all();
         return view('entecoformadores.create', compact('tiposDocumento'));
     }
+    
+    public function show($id)
+    {
+        $ente = Entecoformadores::findOrFail($id);
+        return view('entecoformadores.show', compact('ente'));
+    }
 
     public function store(Request $request)
     {
