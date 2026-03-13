@@ -171,6 +171,7 @@
                 .catch(error => {
                     console.error(error);
                     Swal.fire({
+                
                         icon: 'error',
                         title: 'Error',
                         text: 'Ocurrió un problema al procesar la solicitud.'

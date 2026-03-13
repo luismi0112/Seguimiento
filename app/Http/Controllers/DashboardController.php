@@ -16,10 +16,13 @@ use App\Models\rolesadministrativos;
 use App\Models\tiposdedocumentos;
 use App\Models\entecoformadores;
 
+// Controlador del Dashboard - Muestra estadísticas generales del sistema
 class DashboardController extends Controller
 {
+    // Obtiene conteos de todas las entidades y los envía al dashboard
     public function index()
     {
+        // Cuenta todos los registros de cada entidad
         $regionalesCount       = Regionales::count();
         $centrosCount          = centrosformacion::count();
         $programasCount        = programasformacion::count();
@@ -31,11 +34,13 @@ class DashboardController extends Controller
         $tiposDocumentosCount  = tiposdedocumentos::count();
         $entecoformadoresCount = entecoformadores::count();
 
+        // Cuenta los archivos almacenados en la carpeta 'archivos'
         $archivosCount = 0;
         if (Storage::disk('public')->exists('archivos')) {
             $archivosCount = count(Storage::disk('public')->files('archivos'));
         }
 
+        // Retorna la vista del dashboard con los conteos de todas las entidades
         return view('dashboard', [
             'regionalesCount'       => $regionalesCount,
             'centrosCount'          => $centrosCount,

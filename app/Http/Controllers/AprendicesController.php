@@ -10,18 +10,22 @@ use Illuminate\Support\Facades\Hash;
 
 class AprendicesController extends Controller
 {
+    // Muestra el listado de aprendices
     public function index()
     {
         $aprendices = aprendices::with(['tipoDocumento', 'ficha'])->get();
         return view('aprendices.index', compact('aprendices'));
     }
 
+    // Muestra formulario para crear nuevo aprendiz
     public function create()
     {
         $tiposdocumentos = Tiposdedocumentos::all();
         $fichas = Fichasdecaracterizacion::all();
         return view('aprendices.create', compact('tiposdocumentos', 'fichas'));
     }
+
+    // Muestra detalles de un aprendiz específico
     public function show($id)
     {
         $aprendiz = Aprendices::with(['tipoDocumento', 'eps', 'ficha'])->findOrFail($id);
@@ -29,6 +33,7 @@ class AprendicesController extends Controller
     }
 
 
+    // Valida y crea nuevo aprendiz en la BD
     public function store(Request $request)
     {
         try {
@@ -49,6 +54,7 @@ class AprendicesController extends Controller
             $aprendiz = new aprendices();
             $aprendiz->tbltiposdocumentos_NIS = $request->tbltiposdocumentos_NIS;
             $aprendiz->Numdoc = $request->Numdoc;
+            // NOTA: Se está encriptando el nombre - revisar si es intencional
             $aprendiz->Nombres = Hash::make($request->Nombres);
             $aprendiz->Apellidos = $request->Apellidos;
             $aprendiz->Direccion = $request->Direccion;
@@ -66,6 +72,7 @@ class AprendicesController extends Controller
         }
     }
 
+    // Muestra formulario para editar aprendiz
     public function edit($id)
     {
         $aprendiz = aprendices::findOrFail($id);
@@ -74,6 +81,7 @@ class AprendicesController extends Controller
         return view('aprendices.edit', compact('aprendiz', 'tiposdocumentos', 'fichas'));
     }
 
+    // Valida y actualiza los datos de un aprendiz
     public function update(Request $request, $id)
     {
         try {
@@ -111,6 +119,7 @@ class AprendicesController extends Controller
         }
     }
 
+    // Elimina un aprendiz de la BD
     public function destroy($id)
     {
         try {
