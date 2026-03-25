@@ -259,8 +259,8 @@ return [
     |
     */
 
-    'use_route_url' => false,
-    'dashboard_url' => '/home',
+    'use_route_url' => true,
+    'dashboard_url' => 'homes',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
@@ -329,7 +329,7 @@ return [
             'submenu' => [
 
                 ['text' => 'Aprendices', 'route' => 'aprendices.index','icon' => 'fas fa-users',],
-                ['text' => 'Centros Formación','route' => 'centrosformacion.index','icon' => 'fas fa-school',],
+                ['text' => 'Centros Formación','route' => '#','icon' => 'fas fa-school',],
                 ['text' => 'Regionales', 'route' => 'regionales.index', 'icon' => 'fas fa-map',],
                 ['text' => 'Entecoformadores', 'route' => 'entecoformadores.index', 'icon' => 'fas fa-chalkboard-teacher',],
                 ['text' => 'EPS', 'route' => 'eps.index', 'icon' => 'fas fa-hospital',],
