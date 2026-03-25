@@ -1,79 +1,71 @@
 @extends('adminlte::page')
 
-@section('title', 'Archivos')
+@section('title', 'Aprendices')
 
 @section('content_header')
-<h1>Gestión de Archivos</h1>
+<h1>Aprendices</h1>
 @stop
 
 @section('content')
 
-<div class="card card-primary">
+<div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-folder"></i> Subir nuevo archivo</h3>
+        <a href="{{ route('aprendices.create') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Agregar Aprendiz
+        </a>
     </div>
 
-    <div class="card-body">
-        <form action="{{ route('archivos.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="form-group">
-                <label for="nombre">Nombre personalizado</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Escribe un nombre para el archivo" required>
-            </div>
-            <div class="form-group">
-                <label for="archivo">Seleccionar archivo</label>
-                <input type="file" class="form-control" id="archivo" name="archivo" required>
-            </div>
-            <div class="form-group">
-                <label for="correo">Correo destino (opcional)</label>
-                <input type="email" class="form-control" id="correo" name="correo" placeholder="ejemplo@gmail.com">
-            </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-upload"></i> Subir
-            </button>
-        </form>
-    </div>
-</div>
-
-<div class="card card-info mt-4">
-    <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-list"></i> Archivos almacenados</h3>
-    </div>
-
-    <div class="card-body">
-        @if(empty($files))
-        <p>No hay archivos disponibles.</p>
-        @else
-        <table class="table table-bordered table-striped">
-            <thead>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-hover text-nowrap">
+            <thead class="bg-primary text-white">
                 <tr>
-                    <th>Nombre</th>
-                    <th>Fecha de subida</th>
-                    <th>Acciones</th>
+                    <th>NIS</th>
+                    <th>Documento</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Correo Institucional</th>
+                    <th>Correo Personal</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($files as $file)
+                @foreach($aprendices as $aprendiz)
                 <tr>
-                    <td>{{ $file['name'] }}</td>
-                    <td>{{ $file['created_at'] }}</td>
-                    <td>
-                        <a href="{{ $file['url'] }}" target="_blank" class="btn btn-info btn-sm">
-                            <i class="fas fa-download"></i> Ver
+                    <td>{{ $aprendiz->NIS }}</td>
+                    <td>{{ $aprendiz->Numdoc }}</td>
+                    {{-- Desencriptar el nombre antes de mostrarlo --}}
+                    <td>{{ Crypt::decryptString($aprendiz->Nombres) }}</td>
+                    <td>{{ $aprendiz->Apellidos }}</td>
+                    <td>{{ $aprendiz->CorreoInstitucional }}</td>
+                    <td>{{ $aprendiz->CorreoPersonal }}</td>
+                    <td class="text-center">
+
+                        <a href="{{ route('aprendices.show', $aprendiz->NIS) }}"
+                            class="btn btn-sm btn-info me-1">
+                            <i class="fas fa-eye"></i> Detalles
                         </a>
-                        <form action="{{ route('archivos.destroy', basename($file['path'])) }}" method="POST" style="display:inline-block">
+
+                        <a href="{{ route('aprendices.edit',$aprendiz->NIS) }}"
+                            class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+
+                        <form class="deleteForm"
+                            action="{{ route('aprendices.destroy', $aprendiz->NIS) }}"
+                            method="POST"
+                            style="display:inline-block">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">
                                 <i class="fas fa-trash"></i> Eliminar
                             </button>
                         </form>
+
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
-        @endif
     </div>
 </div>
 
@@ -81,24 +73,62 @@
 
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@if(session('success'))
+
 <script>
-    Swal.fire({
-        icon: 'success',
-        title: '¡Operación Exitosa!',
-        text: "{{ session('success') }}",
-        timer: 3000,
-        showConfirmButton: false
+    document.querySelectorAll('.deleteForm').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción eliminará el aprendiz definitivamente.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    fetch(this.action, {
+                            method: this.method,
+                            body: new FormData(this),
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Eliminado!',
+                                    text: 'El aprendiz se eliminó correctamente.',
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.message || 'No se pudo eliminar el aprendiz.',
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Ocurrió un problema al procesar la solicitud.',
+                            });
+                            console.error(error);
+                        });
+                }
+            });
+        });
     });
 </script>
-@endif
-@if(session('error'))
-<script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: "{{ session('error') }}",
-    });
-</script>
-@endif
 @stop

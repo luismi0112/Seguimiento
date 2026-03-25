@@ -20,9 +20,10 @@ class AprendicesController extends Controller
     // Muestra formulario para crear nuevo aprendiz
     public function create()
     {
+        $LuismigAY = aprendices::all();
         $tiposdocumentos = Tiposdedocumentos::all();
         $fichas = Fichasdecaracterizacion::all();
-        return view('aprendices.create', compact('tiposdocumentos', 'fichas'));
+        return view('aprendices.create', compact('tiposdocumentos', 'fichas', 'LuismigAY'));
     }
 
     // Muestra detalles de un aprendiz específico
@@ -54,7 +55,6 @@ class AprendicesController extends Controller
             $aprendiz = new aprendices();
             $aprendiz->tbltiposdocumentos_NIS = $request->tbltiposdocumentos_NIS;
             $aprendiz->Numdoc = $request->Numdoc;
-            // NOTA: Se está encriptando el nombre - revisar si es intencional
             $aprendiz->Nombres = Hash::make($request->Nombres);
             $aprendiz->Apellidos = $request->Apellidos;
             $aprendiz->Direccion = $request->Direccion;
