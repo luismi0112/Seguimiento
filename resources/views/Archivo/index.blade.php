@@ -1,17 +1,17 @@
 @extends('adminlte::page')
 
-@section('title', 'Aprendices')
+@section('title', 'Archivos')
 
 @section('content_header')
-<h1>Aprendices</h1>
+<h1>Archivos</h1>
 @stop
 
 @section('content')
 
 <div class="card">
     <div class="card-header">
-        <a href="{{ route('aprendices.create') }}" class="btn btn-success">
-            <i class="fas fa-plus"></i> Agregar Aprendiz
+        <a href="{{ route('archivos.create') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Subir Archivo
         </a>
     </div>
 
@@ -19,116 +19,39 @@
         <table class="table table-hover text-nowrap">
             <thead class="bg-primary text-white">
                 <tr>
-                    <th>NIS</th>
-                    <th>Documento</th>
-                    <th>Nombres</th>
-                    <th>Apellidos</th>
-                    <th>Correo Institucional</th>
-                    <th>Correo Personal</th>
+                    <th>Nombre</th>
+                    <th>Fecha de subida</th>
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($aprendices as $aprendiz)
+                @forelse($archivos as $archivo)
                 <tr>
-                    <td>{{ $aprendiz->NIS }}</td>
-                    <td>{{ $aprendiz->Numdoc }}</td>
-                    {{-- Desencriptar el nombre antes de mostrarlo --}}
-                    <td>{{ Crypt::decryptString($aprendiz->Nombres) }}</td>
-                    <td>{{ $aprendiz->Apellidos }}</td>
-                    <td>{{ $aprendiz->CorreoInstitucional }}</td>
-                    <td>{{ $aprendiz->CorreoPersonal }}</td>
+                    <td>{{ $archivo['name'] }}</td>
+                    <td>{{ $archivo['created_at'] }}</td>
                     <td class="text-center">
-
-                        <a href="{{ route('aprendices.show', $aprendiz->NIS) }}"
-                            class="btn btn-sm btn-info me-1">
-                            <i class="fas fa-eye"></i> Detalles
+                        <a href="{{ $archivo['url'] }}" target="_blank" class="btn btn-info btn-sm">
+                            <i class="fas fa-eye"></i> Ver
                         </a>
 
-                        <a href="{{ route('aprendices.edit',$aprendiz->NIS) }}"
-                            class="btn btn-primary btn-sm">
-                            <i class="fas fa-edit"></i> Editar
-                        </a>
-
-                        <form class="deleteForm"
-                            action="{{ route('aprendices.destroy', $aprendiz->NIS) }}"
-                            method="POST"
-                            style="display:inline-block">
+                        <form action="{{ route('archivos.destroy', basename($archivo['path'])) }}"
+                            method="POST" style="display:inline-block">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">
                                 <i class="fas fa-trash"></i> Eliminar
                             </button>
                         </form>
-
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="3" class="text-center">No hay archivos disponibles</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
 </div>
 
-@stop
-
-@section('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-    document.querySelectorAll('.deleteForm').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: "Esta acción eliminará el aprendiz definitivamente.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-
-                    fetch(this.action, {
-                            method: this.method,
-                            body: new FormData(this),
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: '¡Eliminado!',
-                                    text: 'El aprendiz se eliminó correctamente.',
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }).then(() => {
-                                    window.location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: data.message || 'No se pudo eliminar el aprendiz.',
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Ocurrió un problema al procesar la solicitud.',
-                            });
-                            console.error(error);
-                        });
-                }
-            });
-        });
-    });
-</script>
 @stop

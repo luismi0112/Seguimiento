@@ -123,6 +123,17 @@ class AprendicesController extends Controller
     public function destroy($id)
     {
         try {
+
+
+
+
+
+
+
+
+
+
+        
             $aprendiz = aprendices::findOrFail($id);
             $aprendiz->delete();
             return response()->json(['success' => true]);
