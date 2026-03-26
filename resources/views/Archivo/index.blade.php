@@ -11,7 +11,7 @@
 <div class="card">
     <div class="card-header">
         <a href="{{ route('archivos.create') }}" class="btn btn-success">
-            <i class="fas fa-plus"></i> Subir Archivo
+            <i class="fas fa-plus"></i> Subir Bitacora
         </a>
     </div>
 

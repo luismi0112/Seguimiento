@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\ArchivoSubidoMail; 
 
 class ArchivosController extends Controller
 {
@@ -55,11 +56,9 @@ class ArchivosController extends Controller
 
         $file->storeAs('archivos', $filename, 'public');
 
+        // Enviar correo con Mailable
         if ($request->filled('correo')) {
-            Mail::raw("Se ha subido un nuevo archivo llamado: {$filename}", function ($message) use ($request) {
-                $message->to($request->correo)
-                    ->subject('Nuevo archivo subido al sistema');
-            });
+            Mail::to($request->correo)->send(new ArchivoSubidoMail($filename));
         }
 
         return redirect()->route('archivos.index')->with('success', 'Archivo subido correctamente');

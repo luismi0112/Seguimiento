@@ -13,17 +13,17 @@
             @csrf
 
             <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre del archivo</label>
+                <label for="nombre" class="form-label">Nombre de la bitacora</label>
                 <input type="text" name="nombre" id="nombre" class="form-control" required>
             </div>
 
             <div class="mb-3">
-                <label for="archivo" class="form-label">Seleccionar archivo</label>
+                <label for="archivo" class="form-label">Seleccionar Bitacora</label>
                 <input type="file" name="archivo" id="archivo" class="form-control" required>
             </div>
 
             <div class="mb-3">
-                <label for="correo" class="form-label">Correo de notificación (opcional)</label>
+                <label for="correo" class="form-label">Correo de notificación</label>
                 <input type="email" name="correo" id="correo" class="form-control">
             </div>
 
