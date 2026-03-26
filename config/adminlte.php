@@ -338,7 +338,7 @@ return [
                 ['text' => 'Programas de Formación', 'route' => 'programasformacion.index', 'icon' => 'fas fa-graduation-cap',],
                 ['text' => 'Roles Administrativos', 'route' => 'rolesadministrativos.index', 'icon' => 'fas fa-user-shield',],
                 ['text' => 'Tipos de Documentos', 'route' => 'tiposdocumentos.index', 'icon' => 'fas fa-id-card-alt',],
-                ['text' => 'Archivos', 'route' => 'archivos.index', 'icon' => 'fas fa-upload',],
+                ['text' => 'Bitacoras', 'route' => 'archivos.index', 'icon' => 'fas fa-upload',],
 
 
             ],

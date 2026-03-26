@@ -26,7 +26,7 @@ Route::get('/logout', [\App\Http\Controllers\Auth\LoginController::class, 'logou
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::resource('archivos', ArchivosController::class);
+    Route::resource('archivos', archivosController::class);
     Route::resource('regionales', RegionalesController::class);
     Route::resource('aprendices', AprendicesController::class);
     Route::resource('centrosformacion', CentrosformacionController::class);

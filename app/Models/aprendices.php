@@ -3,16 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Tiposdedocumentos;
-use App\Models\Eps;
-use App\Models\Fichasdecaracterizacion;
 
 class aprendices extends Model
 {
     protected $table = 'tbl_aprendices';
     protected $primaryKey = 'NIS';
     public $timestamps = false;
-
     protected $keyType = 'int';
     public $incrementing = true;
 

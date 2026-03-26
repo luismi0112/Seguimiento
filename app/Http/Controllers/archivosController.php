@@ -5,33 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\ArchivoSubidoMail; 
+use App\Mail\ArchivoSubidoMail;
+use App\Models\Archivo; // Importa el modelo
+use Carbon\Carbon;
 
 class ArchivosController extends Controller
 {
-    // Listado de archivos
+    // Listado de archivos desde BD
     public function index()
     {
-        $dir = 'archivos';
-        $archivos = [];
-
-        if (Storage::disk('public')->exists($dir)) {
-            $paths = Storage::disk('public')->files($dir);
-
-            $archivos = collect($paths)->map(function ($path) {
-                return [
-                    'path'       => $path,
-                    'url'        => Storage::url($path),
-                    'name'       => basename($path),
-                    'created_at' => Carbon::createFromTimestamp(
-                        Storage::disk('public')->lastModified($path)
-                    )->format('d/m/Y H:i'),
-                ];
-            })->toArray();
-        }
-
+        $archivos = Archivo::latest()->get(); // ahora trae objetos de la BD
         return view('Archivo.index', compact('archivos'));
     }
 
@@ -41,7 +25,7 @@ class ArchivosController extends Controller
         return view('Archivo.create');
     }
 
-    // Guardar archivo y enviar notificación
+    // Guardar archivo en storage y BD
     public function store(Request $request)
     {
         $request->validate([
@@ -54,7 +38,15 @@ class ArchivosController extends Controller
         $customName = Str::slug($request->input('nombre'));
         $filename = time() . '_' . $customName . '.' . $file->getClientOriginalExtension();
 
+        // Guardar archivo físico
         $file->storeAs('archivos', $filename, 'public');
+
+        // Guardar registro en BD
+        Archivo::create([
+            'nombre' => $filename,
+            'fecha'  => now()->toDateString(),
+            'hora'   => now()->toTimeString(),
+        ]);
 
         // Enviar correo con Mailable
         if ($request->filled('correo')) {
@@ -64,31 +56,18 @@ class ArchivosController extends Controller
         return redirect()->route('archivos.index')->with('success', 'Archivo subido correctamente');
     }
 
-    public function show($id)
-    {
-        abort(404);
-    }
-
-    public function edit($id)
-    {
-        abort(404);
-    }
-
-    public function update(Request $request, $id)
-    {
-        abort(404);
-    }
-
-    // Eliminar archivo
+    // Eliminar archivo y registro
     public function destroy($id)
     {
-        $path = 'archivos/' . $id;
+        $archivo = Archivo::findOrFail($id);
 
+        $path = 'archivos/' . $archivo->nombre;
         if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);
-            return redirect()->route('archivos.index')->with('success', 'Archivo eliminado correctamente');
         }
 
-        return redirect()->route('archivos.index')->with('error', 'El archivo no existe');
+        $archivo->delete();
+
+        return redirect()->route('archivos.index')->with('success', 'Archivo eliminado correctamente');
     }
 }
